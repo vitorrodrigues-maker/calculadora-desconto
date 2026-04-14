@@ -8,9 +8,11 @@ echo ============================================
 echo.
 
 cd /d "%~dp0"
+echo   Pasta: %CD%
+echo.
 
-echo [1/4] Verificando Python...
-python --version >nul 2>&1
+echo [1/5] Verificando Python...
+python --version
 if errorlevel 1 (
     echo.
     echo   ERRO: Python nao encontrado!
@@ -20,10 +22,9 @@ if errorlevel 1 (
     pause
     exit /b 1
 )
-echo   Python OK
 echo.
 
-echo [2/4] Verificando configuracao...
+echo [2/5] Verificando configuracao...
 if not exist ".env" (
     if exist ".env.example" (
         copy .env.example .env >nul
@@ -32,25 +33,30 @@ if not exist ".env" (
         echo   do Metabase antes de usar a calculadora.
         echo.
         notepad .env
-        echo   Salve o arquivo .env no Bloco de Notas e pressione Enter para continuar...
+        echo   Salve o .env e pressione ENTER aqui para continuar...
         pause >nul
     )
 )
 echo   Configuracao OK
 echo.
 
-echo [3/5] Instalando dependencias...
-python -m pip install --quiet --upgrade pip
-python -m pip install --quiet -r requirements.txt
-python -m pip install --quiet pyinstaller
+echo [3/5] Instalando dependencias (pode levar alguns minutos)...
+echo   Atualizando pip...
+python -m pip install --upgrade pip
+echo.
+echo   Instalando Flask, requests, etc...
+python -m pip install -r requirements.txt
+echo.
+echo   Instalando PyInstaller...
+python -m pip install pyinstaller
+echo.
 echo   Dependencias OK
 echo.
 
-echo [4/5] Gerando executavel...
+echo [4/5] Gerando executavel (pode levar 2-3 minutos)...
 if exist build rmdir /s /q build >nul 2>&1
 if exist dist rmdir /s /q dist >nul 2>&1
-python -m PyInstaller calculadora.spec --noconfirm --clean >nul 2>&1
-echo   Build OK
+python -m PyInstaller calculadora.spec --noconfirm --clean
 echo.
 
 if exist "dist\CalculadoraDesconto.exe" (
