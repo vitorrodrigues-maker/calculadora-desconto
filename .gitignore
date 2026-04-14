@@ -1,0 +1,9 @@
+.env
+__pycache__/
+*.pyc
+*.pyo
+data/current_state.json
+.cursor/
+build/
+dist/
+*.spec.bak

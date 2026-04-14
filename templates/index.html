@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Desconto</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <h1>Calculadora de Aprovação de Desconto</h1>
+            <div class="header-right">
+                <span class="updated-at" id="updatedAt"></span>
+                <button class="refresh-btn" id="refreshBtn" title="Atualizar dados agora">
+                    <svg class="refresh-icon" id="refreshIcon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 2v6h-6"/><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/>
+                        <path d="M3 22v-6h6"/><path d="M21 12a9 9 0 0 1-15 6.7L3 16"/>
+                    </svg>
+                    <span id="refreshLabel">Atualizar</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <!-- INPUT CARD -->
+        <section class="input-card">
+            <h2>Simulação de Pedido</h2>
+            <div class="input-grid">
+                <div class="input-group">
+                    <label for="gmvPedido">GMV do Pedido (R$)</label>
+                    <input type="text" id="gmvPedido" placeholder="Ex: 50000" inputmode="decimal">
+                </div>
+                <div class="input-group">
+                    <label for="pctDesconto">% Desconto</label>
+                    <input type="text" id="pctDesconto" placeholder="Ex: 3.5" inputmode="decimal">
+                </div>
+                <div class="input-group">
+                    <label for="vlrDesconto">Valor Desconto (R$)</label>
+                    <input type="text" id="vlrDesconto" placeholder="Auto" inputmode="decimal">
+                </div>
+                <div class="input-group input-info">
+                    <div class="info-badge" id="discountType">-</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- BENCHMARK LIMIT BAR -->
+        <section class="limit-section">
+            <div class="limit-row">
+                <div class="limit-card" id="limitDiario">
+                    <h3>Desconto Diário vs Limite 3.5%</h3>
+                    <div class="limit-bar-container">
+                        <div class="limit-bar">
+                            <div class="limit-bar-fill" id="barDiarioAtual"></div>
+                            <div class="limit-bar-fill sim" id="barDiarioSim"></div>
+                            <div class="limit-marker" style="left: 85.71%"><span>3.0%</span></div>
+                            <div class="limit-marker limit-max" style="left: 100%"><span>3.5%</span></div>
+                        </div>
+                    </div>
+                    <div class="limit-values">
+                        <span>Atual: <strong id="limDiarioAtual">-</strong></span>
+                        <span>Simulado: <strong id="limDiarioSim">-</strong></span>
+                        <span>Margem: <strong id="limDiarioMargem">-</strong></span>
+                    </div>
+                </div>
+                <div class="limit-card" id="limitMensal">
+                    <h3>Desconto Mensal vs Limite 3.5%</h3>
+                    <div class="limit-bar-container">
+                        <div class="limit-bar">
+                            <div class="limit-bar-fill" id="barMensalAtual"></div>
+                            <div class="limit-bar-fill sim" id="barMensalSim"></div>
+                            <div class="limit-marker" style="left: 85.71%"><span>3.0%</span></div>
+                            <div class="limit-marker limit-max" style="left: 100%"><span>3.5%</span></div>
+                        </div>
+                    </div>
+                    <div class="limit-values">
+                        <span>Atual: <strong id="limMensalAtual">-</strong></span>
+                        <span>Simulado: <strong id="limMensalSim">-</strong></span>
+                        <span>Margem: <strong id="limMensalMargem">-</strong></span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- GMV TREND -->
+        <section class="panels">
+            <div class="panel">
+                <h2>Trend GMV — Diário</h2>
+                <div class="trend-grid" id="trendDiario">
+                    <div class="trend-card">
+                        <span class="trend-label">Meta Dia</span>
+                        <span class="trend-value" id="tdMetaDia">-</span>
+                    </div>
+                    <div class="trend-card">
+                        <span class="trend-label">Realizado Hoje</span>
+                        <span class="trend-value" id="tdRealizadoHoje">-</span>
+                    </div>
+                    <div class="trend-card">
+                        <span class="trend-label">Ating. Atual</span>
+                        <span class="trend-value" id="tdAtingAtual">-</span>
+                    </div>
+                    <div class="trend-card sim-card">
+                        <span class="trend-label">Ating. Simulado</span>
+                        <span class="trend-value" id="tdAtingSim">-</span>
+                    </div>
+                    <div class="trend-card">
+                        <span class="trend-label">Trend Atual</span>
+                        <span class="trend-value" id="tdTrendAtual">-</span>
+                    </div>
+                    <div class="trend-card sim-card">
+                        <span class="trend-label">Trend Simulado</span>
+                        <span class="trend-value" id="tdTrendSim">-</span>
+                    </div>
+                </div>
+            </div>
+            <div class="panel">
+                <h2>Trend GMV — Mensal</h2>
+                <div class="trend-grid" id="trendMensal">
+                    <div class="trend-card">
+                        <span class="trend-label">Meta Mês</span>
+                        <span class="trend-value" id="tmMetaMes">-</span>
+                    </div>
+                    <div class="trend-card">
+                        <span class="trend-label">Realizado MTD</span>
+                        <span class="trend-value" id="tmRealizadoMtd">-</span>
+                    </div>
+                    <div class="trend-card">
+                        <span class="trend-label">Ating. Atual</span>
+                        <span class="trend-value" id="tmAtingAtual">-</span>
+                    </div>
+                    <div class="trend-card sim-card">
+                        <span class="trend-label">Ating. Simulado</span>
+                        <span class="trend-value" id="tmAtingSim">-</span>
+                    </div>
+                    <div class="trend-card">
+                        <span class="trend-label">Trend Atual</span>
+                        <span class="trend-value" id="tmTrendAtual">-</span>
+                    </div>
+                    <div class="trend-card sim-card">
+                        <span class="trend-label">Trend Simulado</span>
+                        <span class="trend-value" id="tmTrendSim">-</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script src="{{ url_for('static', filename='js/calculator.js') }}"></script>
+</body>
+</html>
