@@ -33,7 +33,7 @@ if not exist ".env" (
         echo   do Metabase antes de usar a calculadora.
         echo.
         notepad .env
-        echo   Salve o .env e pressione ENTER aqui para continuar...
+        echo   Salve o arquivo .env no Bloco de Notas e pressione Enter para continuar...
         pause >nul
     )
 )
