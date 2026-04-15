@@ -358,9 +358,12 @@
 
     function showUpdatedAt() {
         if (!DATA || !DATA.updated_at) return;
-        const d = new Date(DATA.updated_at);
+        const s = DATA.updated_at;
+        const [datePart, rest] = s.split("T");
+        const time = rest.split(/[-+]/)[0].split(".")[0];
+        const [y, m, d] = datePart.split("-");
         document.getElementById("updatedAt").textContent =
-            "Atualizado: " + d.toLocaleString("pt-BR", { timeZone: "America/Sao_Paulo" });
+            "Atualizado: " + d + "/" + m + "/" + y + ", " + time;
     }
 
     async function loadData() {
