@@ -1,0 +1,21 @@
+services:
+  - type: web
+    name: calculadora-desconto
+    runtime: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn wsgi:app --bind 0.0.0.0:$PORT --workers 1 --threads 2 --timeout 120
+    envVars:
+      - key: METABASE_URL
+        sync: false
+      - key: METABASE_API_KEY
+        sync: false
+      - key: APP_PASSWORD
+        sync: false
+      - key: SECRET_KEY
+        generateValue: true
+      - key: REFRESH_INTERVAL_MINUTES
+        value: "10"
+      - key: HOST
+        value: "0.0.0.0"
+      - key: PYTHON_VERSION
+        value: "3.11.9"

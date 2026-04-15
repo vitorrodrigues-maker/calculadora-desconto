@@ -1,56 +1,39 @@
 import logging
-from typing import Dict, List, Optional
+from typing import Dict, List
 
 import requests
 
 log = logging.getLogger(__name__)
 
 CARD_IDS = {
-    "intraday": 36322,
-    "trend_mensal_semanal": 36318,
-    "trend_diario": 34789,
-    "daily_discounts": 36673,
-    "pct_desconto_historico": 42479,
+    "daily_discounts": 50332,
+    "pct_desconto_historico": 50334,
+    "trend_diario": 50336,
+    "trend_mensal_semanal": 50335,
+    "intraday": 50333,
 }
 
 
 class MetabaseClient:
-    def __init__(self, base_url: str, username: str, password: str):
+    def __init__(self, base_url: str, api_key: str):
         self.base_url = base_url.rstrip("/")
-        self.username = username
-        self.password = password
-        self.session_token: Optional[str] = None
-
-    def _authenticate(self):
-        resp = requests.post(
-            f"{self.base_url}/api/session",
-            json={"username": self.username, "password": self.password},
-            timeout=30,
-        )
-        resp.raise_for_status()
-        self.session_token = resp.json()["id"]
-        log.info("Metabase: autenticado com sucesso")
+        self.api_key = api_key
 
     def _headers(self) -> dict:
-        if not self.session_token:
-            self._authenticate()
-        return {"X-Metabase-Session": self.session_token}
+        return {"x-api-key": self.api_key, "Content-Type": "application/json"}
 
     def query_card(self, card_id: int) -> List[dict]:
         """Execute a saved card/question and return rows as list of dicts."""
-        for attempt in range(2):
-            resp = requests.post(
-                f"{self.base_url}/api/card/{card_id}/query/json",
-                headers=self._headers(),
-                timeout=120,
-            )
-            if resp.status_code == 401 and attempt == 0:
-                log.warning("Metabase: token expirado, re-autenticando...")
-                self.session_token = None
-                continue
-            resp.raise_for_status()
-            return resp.json()
-        return []
+        resp = requests.post(
+            f"{self.base_url}/api/card/{card_id}/query",
+            headers=self._headers(),
+            timeout=120,
+        )
+        resp.raise_for_status()
+        payload = resp.json()
+
+        cols = [c["name"] for c in payload["data"]["cols"]]
+        return [dict(zip(cols, row)) for row in payload["data"]["rows"]]
 
     def query_all_cards(self) -> Dict[str, List[dict]]:
         """Query all configured cards and return {name: rows}."""

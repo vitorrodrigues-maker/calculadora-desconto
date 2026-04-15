@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cayena — Login</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #1A0A08;
+            color: #F5F0EE;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .login-card {
+            background: #241210;
+            border: 1px solid #3D2520;
+            border-radius: 16px;
+            padding: 2.5rem;
+            width: 100%;
+            max-width: 380px;
+            text-align: center;
+        }
+        .logo { font-size: 2rem; font-weight: 700; color: #E8431E; letter-spacing: -0.03em; margin-bottom: 0.25rem; }
+        .subtitle { font-size: 0.85rem; color: #A08A85; margin-bottom: 2rem; }
+        .input-field {
+            width: 100%;
+            background: #2E1A17;
+            border: 1px solid #3D2520;
+            border-radius: 8px;
+            padding: 0.75rem 1rem;
+            color: #F5F0EE;
+            font-size: 1rem;
+            font-family: inherit;
+            text-align: center;
+            transition: border-color 0.2s;
+        }
+        .input-field:focus { outline: none; border-color: #E8431E; }
+        .input-field::placeholder { color: #A08A85; }
+        .btn {
+            width: 100%;
+            margin-top: 1rem;
+            background: #E8431E;
+            border: none;
+            border-radius: 8px;
+            padding: 0.75rem;
+            color: #fff;
+            font-size: 0.95rem;
+            font-family: inherit;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .btn:hover { background: #d13a17; }
+        .error { color: #ef4444; font-size: 0.82rem; margin-top: 0.75rem; }
+    </style>
+</head>
+<body>
+    <form class="login-card" method="POST">
+        <div class="logo">cayena</div>
+        <div class="subtitle">Calculadora de Desconto</div>
+        <input class="input-field" type="password" name="password" placeholder="Senha de acesso" autofocus required>
+        <button class="btn" type="submit">Entrar</button>
+        {% if error %}<div class="error">{{ error }}</div>{% endif %}
+    </form>
+</body>
+</html>

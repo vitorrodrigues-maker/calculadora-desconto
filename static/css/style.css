@@ -1,22 +1,22 @@
 :root {
-    --bg: #0f1117;
-    --surface: #1a1d27;
-    --surface-2: #242836;
-    --border: #2e3345;
-    --text: #e4e6f0;
-    --text-dim: #8b8fa3;
-    --accent: #6c7aff;
+    --bg: #1A0A08;
+    --surface: #241210;
+    --surface-2: #2E1A17;
+    --border: #3D2520;
+    --text: #F5F0EE;
+    --text-dim: #A08A85;
+    --accent: #E8431E;
     --green: #22c55e;
     --yellow: #eab308;
     --red: #ef4444;
-    --sim-bg: rgba(108, 122, 255, 0.08);
-    --sim-border: rgba(108, 122, 255, 0.25);
+    --sim-bg: rgba(232, 67, 30, 0.10);
+    --sim-border: rgba(232, 67, 30, 0.30);
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
 body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     background: var(--bg);
     color: var(--text);
     line-height: 1.5;
@@ -40,10 +40,31 @@ header {
     justify-content: space-between;
 }
 
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.cayena-logo {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: var(--accent);
+    letter-spacing: -0.03em;
+    line-height: 1;
+}
+
+.header-divider {
+    width: 1px;
+    height: 1.4rem;
+    background: var(--border);
+}
+
 header h1 {
-    font-size: 1.25rem;
-    font-weight: 600;
-    letter-spacing: -0.02em;
+    font-size: 1.1rem;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    color: var(--text-dim);
 }
 
 .header-right {
@@ -76,7 +97,7 @@ header h1 {
 .refresh-btn:hover {
     color: var(--accent);
     border-color: var(--accent);
-    background: rgba(108, 122, 255, 0.06);
+    background: rgba(232, 67, 30, 0.08);
 }
 
 .refresh-btn:disabled {
@@ -217,7 +238,7 @@ main {
 
 .limit-bar-fill.sim {
     background: var(--accent);
-    opacity: 0.7;
+    opacity: 0.6;
     z-index: 3;
     border-radius: 0;
 }
@@ -301,7 +322,7 @@ main {
 
 .discount-table td {
     padding: 0.45rem 0.5rem;
-    border-bottom: 1px solid rgba(46, 51, 69, 0.5);
+    border-bottom: 1px solid rgba(61, 37, 32, 0.5);
 }
 
 .discount-table tr:last-child td { border-bottom: none; }
@@ -368,10 +389,15 @@ main {
     .panels { grid-template-columns: 1fr; }
     .trend-grid.wide { grid-template-columns: repeat(2, 1fr); }
     main { padding: 1rem; }
+    .header-content { flex-wrap: wrap; gap: 0.5rem; }
 }
 
 @media (max-width: 600px) {
     .input-grid { grid-template-columns: 1fr; }
     .trend-grid { grid-template-columns: 1fr; }
     .trend-grid.wide { grid-template-columns: 1fr; }
+    header { padding: 0.75rem 1rem; }
+    .header-left { gap: 0.5rem; }
+    .cayena-logo { font-size: 1.3rem; }
+    header h1 { font-size: 0.9rem; }
 }

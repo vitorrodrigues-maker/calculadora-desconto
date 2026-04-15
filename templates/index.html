@@ -3,13 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calculadora de Desconto</title>
+    <title>Cayena — Calculadora de Desconto</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
     <header>
         <div class="header-content">
-            <h1>Calculadora de Aprovação de Desconto</h1>
+            <div class="header-left">
+                <span class="cayena-logo">cayena</span>
+                <span class="header-divider"></span>
+                <h1>Calculadora de Desconto</h1>
+            </div>
             <div class="header-right">
                 <span class="updated-at" id="updatedAt"></span>
                 <button class="refresh-btn" id="refreshBtn" title="Atualizar dados agora">
