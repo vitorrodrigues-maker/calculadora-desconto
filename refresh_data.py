@@ -10,8 +10,10 @@ import json
 import logging
 import os
 import sys
-from datetime import datetime
+from datetime import datetime, timezone, timedelta
 from typing import Dict, List, Optional
+
+BRT = timezone(timedelta(hours=-3))
 
 from dotenv import load_dotenv
 
@@ -53,7 +55,7 @@ def _num(v):
 
 def _find_today_row(daily_rows: List[dict]) -> Optional[dict]:
     """Find today's row in the daily percentage card."""
-    today = datetime.now().strftime("%Y-%m-%d")
+    today = datetime.now(BRT).strftime("%Y-%m-%d")
     for r in daily_rows:
         date_str = str(r.get("order_date_2", ""))[:10]
         if date_str == today:
@@ -66,7 +68,7 @@ def _find_today_row(daily_rows: List[dict]) -> Optional[dict]:
 
 def _find_current_month_row(monthly_rows: List[dict]) -> Optional[dict]:
     """Find the current month's row in the monthly percentage card."""
-    now = datetime.now()
+    now = datetime.now(BRT)
     target = f"{now.year}-{now.month:02d}"
     for r in monthly_rows:
         date_str = str(r.get("order_date_2", ""))[:7]
@@ -113,7 +115,7 @@ def build_daily_discounts(
         log.warning("Nenhuma linha para hoje encontrada no card de desconto diario")
         return []
 
-    now = datetime.now()
+    now = datetime.now(BRT)
     today_str = now.strftime("%Y-%m-%d") + "T00:00:00"
     rest_str = now.strftime("%Y-%m-01") + "T00:00:00"
 
@@ -206,7 +208,7 @@ def transform_gmv_trend(
 
 def build_state(daily_discounts, gmv_trend):
     return {
-        "updated_at": datetime.now().isoformat(),
+        "updated_at": datetime.now(BRT).isoformat(),
         "daily_discounts": daily_discounts,
         "gmv_trend": gmv_trend if isinstance(gmv_trend, dict) else gmv_trend[0],
     }

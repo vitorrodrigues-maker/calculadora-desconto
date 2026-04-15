@@ -1,8 +1,10 @@
 import json
 import logging
 import os
-from datetime import datetime
+from datetime import datetime, timezone, timedelta
 from functools import wraps
+
+BRT = timezone(timedelta(hours=-3))
 
 from apscheduler.schedulers.background import BackgroundScheduler
 from dotenv import load_dotenv
@@ -51,16 +53,16 @@ def scheduled_refresh():
     try:
         result = refresh_from_metabase()
         if result:
-            _last_refresh_status["time"] = datetime.now().isoformat()
+            _last_refresh_status["time"] = datetime.now(BRT).isoformat()
             _last_refresh_status["ok"] = True
             _last_refresh_status["error"] = None
             log.info("Auto-refresh OK — %d dias", len(result["daily_discounts"]))
         else:
-            _last_refresh_status["time"] = datetime.now().isoformat()
+            _last_refresh_status["time"] = datetime.now(BRT).isoformat()
             _last_refresh_status["ok"] = False
             _last_refresh_status["error"] = "Sem dados retornados"
     except Exception as e:
-        _last_refresh_status["time"] = datetime.now().isoformat()
+        _last_refresh_status["time"] = datetime.now(BRT).isoformat()
         _last_refresh_status["ok"] = False
         _last_refresh_status["error"] = str(e)
         log.exception("Auto-refresh falhou")
@@ -104,13 +106,13 @@ def api_refresh():
     try:
         result = refresh_from_metabase()
         if result:
-            _last_refresh_status["time"] = datetime.now().isoformat()
+            _last_refresh_status["time"] = datetime.now(BRT).isoformat()
             _last_refresh_status["ok"] = True
             _last_refresh_status["error"] = None
             return jsonify({"ok": True, "days": len(result["daily_discounts"])})
         return jsonify({"ok": False, "error": "Sem dados retornados"}), 502
     except Exception as e:
-        _last_refresh_status["time"] = datetime.now().isoformat()
+        _last_refresh_status["time"] = datetime.now(BRT).isoformat()
         _last_refresh_status["ok"] = False
         _last_refresh_status["error"] = str(e)
         return jsonify({"ok": False, "error": str(e)}), 502
