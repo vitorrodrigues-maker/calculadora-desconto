@@ -360,7 +360,7 @@
         if (!DATA || !DATA.updated_at) return;
         const d = new Date(DATA.updated_at);
         document.getElementById("updatedAt").textContent =
-            "Atualizado: " + d.toLocaleString("pt-BR");
+            "Atualizado: " + d.toLocaleString("pt-BR", { timeZone: "America/Sao_Paulo" });
     }
 
     async function loadData() {
