@@ -286,29 +286,74 @@
     function update() {
         if (!DATA) return;
 
-        const gmvPedido = parseNum(document.getElementById("gmvPedido"));
-        const pctInput = parseNum(document.getElementById("pctDesconto"));
-        const vlrInput = parseNum(document.getElementById("vlrDesconto"));
-        const hasInput = gmvPedido > 0 && (pctInput > 0 || vlrInput > 0);
+        const nfEl = document.getElementById("precoNF");
+        const qtdEl = document.getElementById("quantidade");
+        const boletoEl = document.getElementById("precoBoleto");
+        const pctEl = document.getElementById("pctDesconto");
+        const vlrEl = document.getElementById("vlrDesconto");
+        const gmvEl = document.getElementById("gmvDerivado");
 
-        let pctDesconto = pctInput / 100;
+        const nf = parseNum(nfEl);
+        const qtd = parseNum(qtdEl);
+        const boletoInput = parseNum(boletoEl);
+        const pctInput = parseNum(pctEl);
+        const vlrInput = parseNum(vlrEl);
+
+        let boleto = boletoInput;
+        let pctNF = pctInput / 100;
         let vlrDesconto = vlrInput;
 
-        if (gmvPedido > 0) {
-            if (pctInput > 0 && !_vlrFocused) {
-                vlrDesconto = gmvPedido * pctDesconto;
-                document.getElementById("vlrDesconto").value = vlrDesconto.toFixed(2);
-            } else if (vlrInput > 0 && !_pctFocused) {
-                pctDesconto = vlrDesconto / gmvPedido;
-                document.getElementById("pctDesconto").value = (pctDesconto * 100).toFixed(2);
+        const baseOk = nf > 0 && qtd > 0;
+
+        if (baseOk) {
+            const source = _lastEdited;
+
+            if (source === "boleto" && boletoInput > 0) {
+                pctNF = (nf - boletoInput) / nf;
+                vlrDesconto = qtd * (nf - boletoInput);
+                if (!_pctFocused) pctEl.value = (pctNF * 100).toFixed(2);
+                if (!_vlrFocused) vlrEl.value = vlrDesconto.toFixed(2);
+            } else if (source === "pct" && pctInput > 0) {
+                boleto = nf * (1 - pctNF);
+                vlrDesconto = qtd * nf * pctNF;
+                if (!_boletoFocused) boletoEl.value = boleto.toFixed(2);
+                if (!_vlrFocused) vlrEl.value = vlrDesconto.toFixed(2);
+            } else if (source === "vlr" && vlrInput > 0) {
+                const descUnit = vlrInput / qtd;
+                boleto = nf - descUnit;
+                pctNF = descUnit / nf;
+                if (!_boletoFocused) boletoEl.value = boleto.toFixed(2);
+                if (!_pctFocused) pctEl.value = (pctNF * 100).toFixed(2);
+            } else if (boletoInput > 0) {
+                pctNF = (nf - boletoInput) / nf;
+                vlrDesconto = qtd * (nf - boletoInput);
+                if (!_pctFocused) pctEl.value = (pctNF * 100).toFixed(2);
+                if (!_vlrFocused) vlrEl.value = vlrDesconto.toFixed(2);
+            } else if (pctInput > 0) {
+                boleto = nf * (1 - pctNF);
+                vlrDesconto = qtd * nf * pctNF;
+                if (!_boletoFocused) boletoEl.value = boleto.toFixed(2);
+                if (!_vlrFocused) vlrEl.value = vlrDesconto.toFixed(2);
+            } else if (vlrInput > 0) {
+                const descUnit = vlrInput / qtd;
+                boleto = nf - descUnit;
+                pctNF = descUnit / nf;
+                if (!_boletoFocused) boletoEl.value = boleto.toFixed(2);
+                if (!_pctFocused) pctEl.value = (pctNF * 100).toFixed(2);
             }
         }
+
+        const gmvPedido = baseOk && boleto > 0 ? qtd * boleto : 0;
+        gmvEl.textContent = gmvPedido > 0 ? fmt(gmvPedido, "brl") : "-";
+
+        const hasInput = baseOk && gmvPedido > 0 && vlrDesconto > 0;
+        const pctSobreBoleto = gmvPedido > 0 ? vlrDesconto / gmvPedido : 0;
 
         const todayRow = getToday(DATA.daily_discounts);
         const monthAgg = aggregateMonth(DATA.daily_discounts);
 
-        const todaySim = hasInput ? simulate(todayRow, gmvPedido, vlrDesconto, pctDesconto) : null;
-        const monthSim = hasInput ? simulate(monthAgg, gmvPedido, vlrDesconto, pctDesconto) : null;
+        const todaySim = hasInput ? simulate(todayRow, gmvPedido, vlrDesconto, pctSobreBoleto) : null;
+        const monthSim = hasInput ? simulate(monthAgg, gmvPedido, vlrDesconto, pctSobreBoleto) : null;
 
         const badge = document.getElementById("discountType");
         if (hasInput) {
@@ -320,8 +365,11 @@
                 badge.textContent = "Acima do limite 3.5% (" + fmt(simMensalPct, "pct") + ")";
                 badge.className = "info-badge supervisores";
             }
+        } else if (!baseOk) {
+            badge.textContent = "Preencha NF e Quantidade";
+            badge.className = "info-badge";
         } else {
-            badge.textContent = "Preencha os campos";
+            badge.textContent = "Preencha Boleto, % ou Valor";
             badge.className = "info-badge";
         }
 
@@ -338,20 +386,32 @@
 
     // ─── Input binding ─────────────────────────────────────
 
+    let _boletoFocused = false;
     let _pctFocused = false;
     let _vlrFocused = false;
+    let _lastEdited = null;
 
     function bindInputs() {
-        const gmvEl = document.getElementById("gmvPedido");
+        const subEl = document.getElementById("subproduto");
+        const nfEl = document.getElementById("precoNF");
+        const qtdEl = document.getElementById("quantidade");
+        const boletoEl = document.getElementById("precoBoleto");
         const pctEl = document.getElementById("pctDesconto");
         const vlrEl = document.getElementById("vlrDesconto");
 
-        pctEl.addEventListener("focus", () => { _pctFocused = true; _vlrFocused = false; });
-        vlrEl.addEventListener("focus", () => { _vlrFocused = true; _pctFocused = false; });
+        boletoEl.addEventListener("focus", () => { _boletoFocused = true; _pctFocused = false; _vlrFocused = false; });
+        pctEl.addEventListener("focus", () => { _pctFocused = true; _boletoFocused = false; _vlrFocused = false; });
+        vlrEl.addEventListener("focus", () => { _vlrFocused = true; _boletoFocused = false; _pctFocused = false; });
 
-        [gmvEl, pctEl, vlrEl].forEach((el) => {
+        boletoEl.addEventListener("input", () => { _lastEdited = "boleto"; update(); });
+        pctEl.addEventListener("input", () => { _lastEdited = "pct"; update(); });
+        vlrEl.addEventListener("input", () => { _lastEdited = "vlr"; update(); });
+
+        [nfEl, qtdEl].forEach((el) => {
             el.addEventListener("input", update);
         });
+
+        subEl.addEventListener("input", () => { /* subproduto é apenas descritivo */ });
     }
 
     // ─── Refresh ─────────────────────────────────────────────

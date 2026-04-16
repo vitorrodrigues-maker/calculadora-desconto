@@ -35,17 +35,33 @@
         <section class="input-card">
             <h2>Simulação de Pedido</h2>
             <div class="input-grid">
-                <div class="input-group">
-                    <label for="gmvPedido">GMV do Pedido (R$)</label>
-                    <input type="text" id="gmvPedido" placeholder="Ex: 50000" inputmode="decimal">
+                <div class="input-group col-subproduto">
+                    <label for="subproduto">Subproduto</label>
+                    <input type="text" id="subproduto" placeholder="Ex: Leite Integral 1L" autocomplete="off">
                 </div>
                 <div class="input-group">
-                    <label for="pctDesconto">% Desconto</label>
+                    <label for="precoNF">Preço NF (R$ unit.) *</label>
+                    <input type="text" id="precoNF" placeholder="Ex: 12.50" inputmode="decimal">
+                </div>
+                <div class="input-group">
+                    <label for="quantidade">Quantidade *</label>
+                    <input type="text" id="quantidade" placeholder="Ex: 100" inputmode="decimal">
+                </div>
+                <div class="input-group">
+                    <label for="precoBoleto">Preço Boleto (R$ unit.)</label>
+                    <input type="text" id="precoBoleto" placeholder="Auto" inputmode="decimal">
+                </div>
+                <div class="input-group">
+                    <label for="pctDesconto">% Desconto (sobre NF)</label>
                     <input type="text" id="pctDesconto" placeholder="Ex: 3.5" inputmode="decimal">
                 </div>
                 <div class="input-group">
                     <label for="vlrDesconto">Valor Desconto (R$)</label>
                     <input type="text" id="vlrDesconto" placeholder="Auto" inputmode="decimal">
+                </div>
+                <div class="input-group readonly">
+                    <label for="gmvDerivado">GMV calculado</label>
+                    <div class="readonly-value" id="gmvDerivado">-</div>
                 </div>
                 <div class="input-group input-info">
                     <div class="info-badge" id="discountType">-</div>
